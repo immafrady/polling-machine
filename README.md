@@ -16,7 +16,7 @@ npm install -S polling-machine
 
 #### 1. create new instance
 ```javascript
-    const pollingMachine = new PollingMachine(aPromiseMethod, arg1, arg2)
+    const pollingMachine = new PollingMachine(aPromiseMethod, arg1, arg2, /* and so on */)
 ```
 
 #### 2. add event listener
@@ -43,3 +43,6 @@ npm install -S polling-machine
     pollingMachine.stop() // you need to stop polling before restart it, or an error will be thrown.
     pollingMachine.start()
 ```
+
+## License
+[MIT](http://opensource.org/licenses/MIT)
