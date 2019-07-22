@@ -17,6 +17,7 @@ class PollingMachine {
         this.events.set(PollingMachine.EVENT.MSG, null);
         this.events.set(PollingMachine.EVENT.MSG, null);
         this.timer = null;
+        this.gap = 0;
     }
 
     /**
@@ -24,6 +25,7 @@ class PollingMachine {
      * @param time - Gap between each request
      */
     start(time = PollingMachine.DEFAULT_TIME_GAP) {
+        this.gap = time;
         if (!this.timer) {
             this.timer = setInterval(() => {
                 Promise
@@ -40,9 +42,10 @@ class PollingMachine {
                             fail(err)
                         }
                     });
-            }, time)
+            }, this.gap)
         } else {
-            throw new Error('Polling Already Begun!')
+            this.stop();
+            this.start(this.gap);
         }
     }
 
@@ -50,24 +53,27 @@ class PollingMachine {
      * Stop Polling
      */
     stop() {
-        clearInterval(this.timer)
+        clearInterval(this.timer);
         this.timer = null
     }
 
     /**
      * Add Event Listener
-     * @param event - Event mame
      * @param method - Method to be called
      */
-    on(event, method) {
+    onmessage(method) {
         if (typeof method === 'function') {
-            if (typeof event === 'string' && Object.values(PollingMachine.EVENT).includes(event)) {
-                this.events.set(event, method)
-            } else {
-                throw new Error(`Unsupported Event: ${event}`);
-            }
+            this.events.set(PollingMachine.EVENT.MSG, method);
         } else {
-            throw new Error('The Second Argument Must Be "function"')
+            throw new Error('Missing Argument: type must be "function"');
+        }
+    }
+
+    onerror(method) {
+        if (typeof method === 'function') {
+            this.events.set(PollingMachine.EVENT.ERR, method);
+        } else {
+            throw new Error('Missing Argument: type must be "function"');
         }
     }
 }
